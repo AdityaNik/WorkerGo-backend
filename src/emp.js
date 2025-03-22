@@ -21,22 +21,22 @@ const isValidPhone = (phone) => {
 EmployeerRoute.post('/createjob', async (req, res) => {
     console.log("Job request received:", req.body);
     try {
-      const { jobTitle, companyName, locality, startDate, totalDays, description, need, salary, requiredSkills } = req.body;
+      const { jobTitle, companyName, locality, startDate, totalDays, description, need, salary, requiredSkills, fullfilled } = req.body;
   
       // Basic validation
-      if (!jobTitle || !companyName || !locality || !startDate || !totalDays || !description || !need || !salary || !requiredSkills) {
-        return res.status(400).json({
-          success: false,
-          message: 'All fields are required'
-        });
-      }
+      // if (!jobTitle || !companyName || !locality || !startDate || !totalDays || !description || !need || !salary || !requiredSkills) {
+      //   return res.status(400).json({
+      //     success: false,
+      //     message: 'All fields are required'
+      //   });
+      // }
   
-      if (!isValidDate(startDate)) {
-        return res.status(400).json({
-          success: false,
-          message: 'Invalid start date format'
-        });
-      }
+      // if (!isValidDate(startDate)) {
+      //   return res.status(400).json({
+      //     success: false,
+      //     message: 'Invalid start date format'
+      //   });
+      // }
   
       // Check if job already exists
       const jobExists = await prisma.job.findFirst({ where: { jobTitle } });
@@ -60,7 +60,8 @@ EmployeerRoute.post('/createjob', async (req, res) => {
           need,
           fullfilled: 0, // Set to 0 by default
           salary,
-          requiredSkills
+          requiredSkills,
+          fullfilled
         }
       });
   
@@ -75,8 +76,7 @@ EmployeerRoute.post('/createjob', async (req, res) => {
       console.error('Job creation error:', error);
       res.status(500).json({
         success: false,
-        message: 'An error occurred during job creation',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        message: 'An error occurred during job creation'
       });
     }
   });
@@ -218,6 +218,15 @@ EmployeerRoute.get('/brokerlogin', async (req, res) => {
       } else {
         return res.status(404).json({ message: 'User not found' });
       }
+    } catch (error) {
+      return res.status(500).json({ message: 'Server error' });
+    }
+  });
+
+  EmployeerRoute.get('/getAllJobs', async (req, res) => {
+    try {
+      const jobs = await prisma.job.findMany();
+      return res.status(200).json({ message: 'Jobs retrieved successfully', jobs });
     } catch (error) {
       return res.status(500).json({ message: 'Server error' });
     }
