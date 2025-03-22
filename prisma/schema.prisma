@@ -45,6 +45,7 @@ model Job {
   fullfilled      Int
   salary          Int
   requiredSkills  String[]
+  isActive        Boolean @default(true)
 }
 
 model PreviousJobs {

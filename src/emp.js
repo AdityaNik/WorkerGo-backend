@@ -237,4 +237,13 @@ EmployeerRoute.get('/brokerlogin', async (req, res) => {
     }
   });
 
+  EmployeerRoute.get('/getAllJobs', async (req, res) => {
+    try {
+      const jobs = await prisma.job.findMany();
+      return res.status(200).json({ message: 'Jobs retrieved successfully', jobs });
+    } catch (error) {
+      return res.status(500).json({ message: 'Server error' });
+    }
+  });
+
 module.exports = EmployeerRoute;
