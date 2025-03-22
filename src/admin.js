@@ -8,7 +8,7 @@ AdminRoute.get("/stats", async (req, res) => {
   try {
     const totalWorkers = await prisma.worker.count();
     const totalEmployers = await prisma.company.count();
-    const totalBrokerers = await prisma.company.count();
+    const totalBrokers = await prisma.broker.count();
     const totalJobs = await prisma.job.count();
 
     // If you have a brokers table, uncomment the next line
@@ -17,6 +17,7 @@ AdminRoute.get("/stats", async (req, res) => {
     return res.json({
       totalWorkers,
       totalEmployers,
+      totalBrokers,
       totalJobs,
       // totalBrokers  // Uncomment this if you have brokers
     });
