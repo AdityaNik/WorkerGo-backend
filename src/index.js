@@ -6,18 +6,16 @@ const AdminRoute = require("./admin");
 const app = express();
 
 app.use(cors());
-app.use(express.json())
+app.use(express.json());
 
-app.use('/emp', EmployeerRoute);
-app.use('/worker', WorkerRoute);
-app.use('/admin', AdminRoute);
+app.use("/emp", EmployeerRoute);
+app.use("/worker", WorkerRoute);
+app.use("/admin", AdminRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-
-
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
+app.listen(4000, () => {
+  console.log("Server is running on port 4000");
 });
