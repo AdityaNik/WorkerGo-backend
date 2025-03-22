@@ -7,14 +7,14 @@
 
 model Worker {
   id              Int      @id @default(autoincrement())
-  name            String
-  phone           String
+  name            String?
+  phone           String?
   skills          String[]
-  location        String
-  availability    Boolean
-  registeredFrom  String
-  experinceLevel  String
-  previousJobs    PreviousJobs[]
+  location        String?
+  availability    Boolean?
+  registeredFrom  String?
+  experinceLevel  String?
+  previousJobs    Int[]
 }
 
 model Company {
@@ -48,7 +48,6 @@ model PreviousJobs {
   description String
   location    String
   salary      Float
-  worker      Worker @relation(fields: [workerId], references: [id])
   workerId    Int
 }
 

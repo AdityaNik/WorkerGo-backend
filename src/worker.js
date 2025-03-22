@@ -1,5 +1,5 @@
 const express = require('express');
-const PrismaClient = require('@prisma/client');
+const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post('/register', async (req, res) => {
 
-    const { name, phone, skills, location } = req.body;
+    const { name, phone, skills, location, registeredFrom, experinceLevel } = req.body;
 
     const worker = {
         name,
@@ -16,7 +16,9 @@ router.post('/register', async (req, res) => {
         skills,
         location,
         availability: true,
-        previousJobs: []
+        previousJobs: [],
+        registeredFrom,
+        experinceLevel
     };
 
     const result = await prisma.worker.create({
@@ -29,8 +31,11 @@ router.post('/register', async (req, res) => {
 
 
 
-router.get('/', (req, res) => {
-    res.send('Worker Route');
+router.get('/allWorkers', async (req, res) => {
+
+    const workers = await prisma.worker.findMany();
+    console.log(workers);
+    res.send(workers);
 });
 
 module.exports = router;
