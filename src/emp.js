@@ -18,69 +18,83 @@ const isValidPhone = (phone) => {
   return phoneRegex.test(phone);
 };
 
+const isValidDate = (dateString) => !isNaN(Date.parse(dateString));
+
 EmployeerRoute.post('/createjob', async (req, res) => {
     console.log("Job request received:", req.body);
+
     try {
-      const { jobTitle, companyName, locality, startDate, totalDays, description, need, salary, requiredSkills, fullfilled } = req.body;
-  
-      // Basic validation
-      // if (!jobTitle || !companyName || !locality || !startDate || !totalDays || !description || !need || !salary || !requiredSkills) {
-      //   return res.status(400).json({
-      //     success: false,
-      //     message: 'All fields are required'
-      //   });
-      // }
-  
-      // if (!isValidDate(startDate)) {
-      //   return res.status(400).json({
-      //     success: false,
-      //     message: 'Invalid start date format'
-      //   });
-      // }
-  
-      // Check if job already exists
-      const jobExists = await prisma.job.findFirst({ where: { jobTitle } });
-  
-      if (jobExists) {
-        return res.status(409).json({
-          success: false,
-          message: 'Job with this title already exists'
+        const { jobTitle, companyName, locality, startDate, totalDays, description, need, salary, requiredSkills } = req.body;
+
+        // Check if required fields are missing
+        // if (!jobTitle || !companyName || !locality || !startDate || !totalDays || !description || !need || !salary || !requiredSkills) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: 'All fields are required',
+        //     });
+        // }
+
+        // // Validate date format
+        // if (!isValidDate(startDate)) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: 'Invalid start date format',
+        //     });
+        // }
+
+        // // Ensure `need` and `salary` are numbers
+        // if (isNaN(need) || isNaN(salary)) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: 'Need and Salary must be valid numbers',
+        //     });
+        // }
+
+        // // Check if job with the same title already exists
+        // const jobExists = await prisma.job.findFirst({
+        //     where: { jobTitle, companyName, locality },
+        // });
+
+        // if (jobExists) {
+        //     return res.status(409).json({
+        //         success: false,
+        //         message: 'A job with this title at the same company and location already exists',
+        //     });
+        // }
+
+        // Create a new job with `fullfilled` set to 0 by default
+        const newJob = await prisma.job.create({
+            data: {
+                jobTitle,
+                companyName,
+                locality,
+                startDate: new Date(startDate),
+                totalDays: parseInt(totalDays),
+                description,
+                need: parseInt(need),
+                fullfilled: 0, // Always starts at 0
+                salary: parseFloat(salary),
+                requiredSkills,
+            },
         });
-      }
-  
-      // Create job with fullfilled set to 0 by default
-      const newJob = await prisma.job.create({
-        data: {
-          jobTitle,
-          companyName,
-          locality,
-          startDate,
-          totalDays,
-          description,
-          need,
-          fullfilled: 0, // Set to 0 by default
-          salary,
-          requiredSkills,
-          fullfilled
-        }
-      });
-  
-      console.log("Job created successfully:", newJob);
-      res.status(201).json({
-        success: true,
-        message: 'Job created successfully',
-        job: newJob
-      });
-  
+
+        console.log("Job created successfully:", newJob);
+
+        res.status(201).json({
+            success: true,
+            message: 'Job created successfully',
+            job: newJob,
+        });
+
     } catch (error) {
-      console.error('Job creation error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'An error occurred during job creation'
-      });
+        console.error('Job creation error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while creating the job',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+        });
     }
-  });
-  
+});
 
 EmployeerRoute.get('/jobs', async (req, res) => {
     console.log("Job request received:", req.body);

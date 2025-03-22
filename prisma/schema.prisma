@@ -38,12 +38,12 @@ model Job {
   jobTitle        String
   companyName     String
   locality        String
-  startDate       String
+  startDate       DateTime
   totalDays       Int
   description     String
   need            Int
   fullfilled      Int
-  salary          Float
+  salary          Int
   requiredSkills  String[]
   isActive        Boolean @default(true)
 }
