@@ -188,6 +188,44 @@ EmployeerRoute.get('/brokerlogin', async (req, res) => {
     }
   });
 
+
+EmployeerRoute.post('/withdrawjob', async (req, res) => {
+  // console.log("Job request received:", req.body);
+  try {
+      const { jobId, workerId } = req.body;
+      console.log("jobid: ", jobId);
+      console.log("workerid: ", workerId);
+      const job = await prisma.job.findUnique({
+          where: {
+              id: parseInt(jobId)
+          }
+      });
+      if (!job) {
+          return res.status(404).json({
+              success: false,
+              message: 'Job not found'
+          });
+      }
+      const updatedJob = await prisma.job.update({
+          where: {
+              id: parseInt(jobId)
+          },
+          data: {
+              workers: job.workers.filter((id) => id !== parseInt(workerId))
+          }
+      });
+      console.log(updatedJob);
+      res.send(updatedJob);
+  } catch (error) {
+      console.error('Job retrieval error:', error);
+      res.status(500).json({
+          success: false,
+          message: 'An error occurred during job retrieval',
+          error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+  }
+});
+
 // Add this endpoint to your EmployeerRoute.js file
 EmployeerRoute.get('/job/:id/workers', async (req, res) => {
   const jobId = parseInt(req.params.id);
