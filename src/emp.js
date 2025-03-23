@@ -6,20 +6,6 @@ const prisma = new PrismaClient();
 // Middleware for request body parsing
 EmployeerRoute.use(express.json());
 
-// Helper function to validate email format
-const isValidEmail = (email) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-// Helper function to validate phone number format
-const isValidPhone = (phone) => {
-  const phoneRegex = /^\d{10,12}$/; // Simple validation for 10-12 digit phone numbers
-  return phoneRegex.test(phone);
-};
-
-const isValidDate = (dateString) => !isNaN(Date.parse(dateString));
-
 EmployeerRoute.post('/createjob', async (req, res) => {
     console.log("Job request received:", req.body);
 
@@ -138,23 +124,6 @@ EmployeerRoute.post('/register', async (req, res) => {
     try {
       const cmp = req.body;
       console.log(cmp);
-    //   if (!email || !password || !phone || !userType) {
-    //     return res.status(400).json({ message: 'All fields are required' });
-    //   }
-      
-    //   if (userType === 'employer' && !companyName) {
-    //     return res.status(400).json({ message: 'Company name is required' });
-    //   }
-  
-    //   if (userType === 'broker' && !name) {
-    //     return res.status(400).json({ message: 'Broker name is required' });
-    //   }
-  
-    //   const userExists = await prisma.company.findFirst({ where: { email } });
-    //   if (userExists) {
-    //     return res.status(409).json({ message: 'User already exists' });
-    //   }
-  
       const newUser = await prisma.company.create({
         data: {
           name: cmp.companyName,
@@ -175,23 +144,6 @@ EmployeerRoute.post('/register', async (req, res) => {
     try {
       const cmp = req.body;
       console.log(cmp);
-    //   if (!email || !password || !phone || !userType) {
-    //     return res.status(400).json({ message: 'All fields are required' });
-    //   }
-      
-    //   if (userType === 'employer' && !companyName) {
-    //     return res.status(400).json({ message: 'Company name is required' });
-    //   }
-  
-    //   if (userType === 'broker' && !name) {
-    //     return res.status(400).json({ message: 'Broker name is required' });
-    //   }
-  
-    //   const userExists = await prisma.company.findFirst({ where: { email } });
-    //   if (userExists) {
-    //     return res.status(409).json({ message: 'User already exists' });
-    //   }
-  
       const newUser = await prisma.broker.create({
         data: {
           name: cmp.name,
@@ -237,13 +189,44 @@ EmployeerRoute.get('/brokerlogin', async (req, res) => {
     }
   });
 
-  EmployeerRoute.get('/getAllJobs', async (req, res) => {
-    try {
-      const jobs = await prisma.job.findMany();
-      return res.status(200).json({ message: 'Jobs retrieved successfully', jobs });
-    } catch (error) {
-      return res.status(500).json({ message: 'Server error' });
+// Add this endpoint to your EmployeerRoute.js file
+EmployeerRoute.get('/job/:id/workers', async (req, res) => {
+  const jobId = parseInt(req.params.id);
+  
+  try {
+    // First, find the job to get the worker IDs
+    const job = await prisma.job.findUnique({
+      where: { id: jobId }
+    });
+    
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: 'Job not found'
+      });
     }
-  });
+    
+    // If the job has no workers, return an empty array
+    if (!job.workers || job.workers.length === 0) {
+      return res.status(200).json([]);
+    }
+    
+    // Fetch the worker details based on the IDs in the job.workers array
+    const workers = await prisma.worker.findMany({
+      where: {
+        id: { in: job.workers }
+      }
+    });
+    
+    res.status(200).json(workers);
+  } catch (error) {
+    console.error('Error fetching job workers:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while fetching workers for this job',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
 
 module.exports = EmployeerRoute;
