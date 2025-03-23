@@ -45,6 +45,24 @@ router.post('/changeAvailability', async (req, res) => {
     }
 });
 
+router.post('/acceptJob', async (req, res) => {
+    try {
+        const { jobId, workerId } = req.body; 
+        // console.log(worker);
+
+        const updatedWorker = await prisma.job.update({
+            where: {id: parseInt(jobId)},
+            // workers is an array of worker IDs
+            data: { workers: { push: parseInt(workerId) } },
+        });
+        console.log(updatedWorker);
+        res.status(200).json({ message: 'Job accepted successfully', updatedWorker });
+    } catch (err) {
+        console.error('Error accepting job:', err);
+        res.status(500).json({ error: 'Failed to accept job', details: err });
+    }
+});
+
 
 
 
