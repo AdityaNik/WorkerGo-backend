@@ -1,13 +1,15 @@
 -- CreateTable
 CREATE TABLE "Worker" (
     "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "phone" TEXT NOT NULL,
+    "name" TEXT,
+    "phone" TEXT,
     "skills" TEXT[],
-    "location" TEXT NOT NULL,
-    "availability" BOOLEAN NOT NULL,
-    "registeredFrom" TEXT NOT NULL,
-    "experinceLevel" TEXT NOT NULL,
+    "location" TEXT,
+    "availability" BOOLEAN,
+    "registeredFrom" TEXT,
+    "experinceLevel" TEXT,
+    "previousJobs" INTEGER[],
+    "isjobless" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "Worker_pkey" PRIMARY KEY ("id")
 );
@@ -19,8 +21,20 @@ CREATE TABLE "Company" (
     "email" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
     "password" TEXT NOT NULL,
+    "jobs" INTEGER[],
 
     CONSTRAINT "Company_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Broker" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "phone" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+
+    CONSTRAINT "Broker_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -34,8 +48,11 @@ CREATE TABLE "Job" (
     "description" TEXT NOT NULL,
     "need" INTEGER NOT NULL,
     "fullfilled" INTEGER NOT NULL,
-    "salary" DOUBLE PRECISION NOT NULL,
+    "salary" INTEGER NOT NULL,
     "requiredSkills" TEXT[],
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "companyId" INTEGER,
+    "workers" INTEGER[],
 
     CONSTRAINT "Job_pkey" PRIMARY KEY ("id")
 );
@@ -54,6 +71,3 @@ CREATE TABLE "PreviousJobs" (
 
     CONSTRAINT "PreviousJobs_pkey" PRIMARY KEY ("id")
 );
-
--- AddForeignKey
-ALTER TABLE "PreviousJobs" ADD CONSTRAINT "PreviousJobs_workerId_fkey" FOREIGN KEY ("workerId") REFERENCES "Worker"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

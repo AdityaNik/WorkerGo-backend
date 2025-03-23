@@ -4,49 +4,51 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-
 model Worker {
-  id              Int      @id @default(autoincrement())
-  name            String?
-  phone           String?
-  skills          String[]
-  location        String?
-  availability    Boolean?
-  registeredFrom  String?
-  experinceLevel  String?
-  previousJobs    Int[]
+  id             Int      @id @default(autoincrement())
+  name           String?
+  phone          String?
+  skills         String[]
+  location       String?
+  availability   Boolean?
+  registeredFrom String?
+  experinceLevel String?
+  previousJobs   Int[]
+  isjobless      Boolean  @default(true)
 }
 
 model Company {
-  id                Int      @id @default(autoincrement())
-  name              String
-  email             String
-  phone             String
-  password          String
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String
+  phone    String
+  password String
+  jobs     Int[]
 }
 
 model Broker {
-  id                Int      @id @default(autoincrement())
-  name              String
-  email             String
-  phone             String
-  password          String
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String
+  phone    String
+  password String
 }
 
 model Job {
-  id              Int      @id @default(autoincrement())
-  jobTitle        String
-  companyName     String
-  locality        String
-  startDate       String
-  totalDays       Int
-  description     String
-  need            Int
-  fullfilled      Int
-  salary          Int
-  requiredSkills  String[]
-  isActive        Boolean @default(true)
-  workers         Int[]
+  id             Int      @id @default(autoincrement())
+  jobTitle       String
+  companyName    String
+  locality       String
+  startDate      DateTime
+  totalDays      Int
+  description    String
+  need           Int
+  fullfilled     Int
+  salary         Int
+  requiredSkills String[]
+  isActive       Boolean  @default(true)
+  companyId      Int?
+  workers        Int[]
 }
 
 model PreviousJobs {
@@ -60,7 +62,6 @@ model PreviousJobs {
   salary      Float
   workerId    Int
 }
-
 
 generator client {
   provider = "prisma-client-js"
