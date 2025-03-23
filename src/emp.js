@@ -39,14 +39,14 @@ EmployeerRoute.post('/createjob', async (req, res) => {
       // }
   
       // Check if job already exists
-      const jobExists = await prisma.job.findFirst({ where: { jobTitle } });
+      // const jobExists = await prisma.job.findFirst({ where: { jobTitle } });
   
-      if (jobExists) {
-        return res.status(409).json({
-          success: false,
-          message: 'Job with this title already exists'
-        });
-      }
+      // if (jobExists) {
+      //   return res.status(409).json({
+      //     success: false,
+      //     message: 'Job with this title already exists'
+      //   });
+      // }
   
       // Create job with fullfilled set to 0 by default
       const newJob = await prisma.job.create({
@@ -92,8 +92,7 @@ EmployeerRoute.get('/jobs', async (req, res) => {
         console.error('Job retrieval error:', error);
         res.status(500).json({
             success: false,
-            message: 'An error occurred during job retrieval',
-            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+            message: 'An error occurred during job retrieval'
         });
     }
 });
@@ -218,15 +217,6 @@ EmployeerRoute.get('/brokerlogin', async (req, res) => {
       } else {
         return res.status(404).json({ message: 'User not found' });
       }
-    } catch (error) {
-      return res.status(500).json({ message: 'Server error' });
-    }
-  });
-
-  EmployeerRoute.get('/getAllJobs', async (req, res) => {
-    try {
-      const jobs = await prisma.job.findMany();
-      return res.status(200).json({ message: 'Jobs retrieved successfully', jobs });
     } catch (error) {
       return res.status(500).json({ message: 'Server error' });
     }
