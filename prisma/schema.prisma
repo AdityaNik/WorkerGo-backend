@@ -46,6 +46,7 @@ model Job {
   salary          Int
   requiredSkills  String[]
   isActive        Boolean @default(true)
+  workers         Int[]
 }
 
 model PreviousJobs {
